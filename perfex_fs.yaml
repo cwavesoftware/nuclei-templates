@@ -1,0 +1,23 @@
+id: perfex_fs
+
+info:
+  name: Detect SQLi in Perfex File Sharing module
+  author: cwave
+  severity: High
+  tags: sqli,web
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/modules/file_sharing/authorize.php?file='"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "You have an error in your SQL syntax"
+        condition: or
+
+      - type: status
+        status:
+          - 500

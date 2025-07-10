@@ -1,0 +1,23 @@
+id: fastly-tls-takeover
+
+info:
+  name: Fastly Free TLS Takeover Detection
+  author: cWave
+  severity: high
+  reference:
+    - https://tbd
+  tags: takeover,fastly
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "unknown domain"
+          - "ssl.fastly.net"
+        condition: and
+
